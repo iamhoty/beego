@@ -339,10 +339,31 @@ func (this *RegController) Get() {
 
 #### 1.2.4 自定义路由
 ​	上面两种路由都是默认的根据请求的类型，Get就执行Get方法，Post执行Post方法，比较局限。因为在开发的时候大部分都是使用固定匹配想要直接执行对应的逻辑控制方法，因此beego提供给我们了可以自定义的自定义路由配置。方式如下：
-```
+```go
 beego.Router("/",&IndexController{},"")
 ```
+routers
+
+```go
+beego.Router("/getUserInfo", &controllers.CustomController{}, "GET:GetUserInfo")
+```
+
+controllers
+
+```go
+func (this *CustomController) GetUserInfo() {
+	beego.Info("获取用户信息")
+
+	username := this.GetString("username")
+
+	userid := this.GetString("userid")
+
+	this.Ctx.Output.Body([]byte("获取用户信息请求,用户名：" + username + " , 用户编号：" + userid))
+}
+```
+
 可以用的HTTP Method：
+
 * "*"：包含以下所有的函数
 * "get"：GET 请求
 * "post"：POST 请求
@@ -364,7 +385,7 @@ beego.Router("/",&IndexController{},"")
 ​	在goweb项目中，上面说过是有一些静态资源文件的，如果用户要访问静态资源文件，我们应该也是能够访问的，这需要在我们的项目中进行静态资源设置。
 设置方式为：
 
-```
+```go
 beego.SetStaticPath("/down1","download1")
 ```
 这里的download目录是指的非goweb项目的static目录下目录，而是开发者重新新建的另外的目录。
@@ -372,20 +393,16 @@ beego.SetStaticPath("/down1","download1")
 ### 1.6 实战项目介绍
 ​	在本系列课程中，我们一起使用Beego框架开发实现一个博客系统。如下图所示：
 
-![项目效果1](./img/WX20190515-124022@2x.png)
+![Snipaste_2022-08-08_22-58-22](./images/Snipaste_2022-08-08_22-58-22.png)
 
-![项目效果2](./img/WX20190515-124056@2x.png)
-
-![项目效果3](./img/WX20190515-124145@2x.png)
-
-![项目效果4](./img/WX20190515-124339@2x.png)
+![Snipaste_2022-08-08_22-59-12](./images/Snipaste_2022-08-08_22-59-12.png)
 
 # 四、数据库配置及连接测试
 ### 2.1 mysql数据库安装
 mysql官方下载网站：[https://dev.mysql.com/downloads/](https://dev.mysql.com/downloads/)
 我们使用的是5.7版本，下载链接：[https://dev.mysql.com/downloads/mysql/5.7.html#downloads](https://dev.mysql.com/downloads/mysql/5.7.html#downloads)
 
-![mysql下载](./img/mysql.png)
+![Snipaste_2022-08-08_23-04-55](./images/Snipaste_2022-08-08_23-04-55.png)
 
 选择下载安装文件，并在本地进行安装。
 安装过程中，若出现初始密码，要记住该密码，首次登陆时要使用。
@@ -400,53 +417,52 @@ mysql -u root -p
 ```
 
 输入安装时或者自己设置的密码即可登陆成功。如下所示：
-![终端登录mysql](./img/mysql_login_1.png)
+![Snipaste_2022-08-08_23-06-02](./images/Snipaste_2022-08-08_23-06-02.png)
 如上图所示表示登陆成功。为了使用自己的密码，可以自己设置一个自己熟悉的密码，方便自己记忆。
 
 ### 2.2 mysql数据库常用命令
 mysql数据库的一些命令使用：
 * 查看数据库：
 
-    ```
+    ```sql
     show databases;
     ```
 * 使用某个数据库：
 
-    ```
+    ```sql
     use databaseName;
     ```
 
 * 展示某个数据库表格列表：
 
-    ```
+    ```sql
     show tables;
     ```
     
 * mysql中的一些其他命令：
 
-    ![mysql常用命令安装](./img/mysql_command.png)
-    
+* ![Snipaste_2022-08-08_23-08-08](./images/Snipaste_2022-08-08_23-08-08.png)
 
-以上mysql数据操作都是命令行终端形式，为了方便我们日常操作，我们可以使用图形化界面工具，在这里我们使用的是navicat工具。我们现在来看如何进行安装。
+​	以上mysql数据操作都是命令行终端形式，为了方便我们日常操作，我们可以使用图形化界面工具，在这里我们使用的是navicat工具。我们现在来看如何进行安装。
 
 ### 2.3 Navicat安装
-navicat工具下载地址：[https://www.navicat.com/en/download/navicat-for-mysql](https://www.navicat.com/en/download/navicat-for-mysql)
+​	navicat工具下载地址：[https://www.navicat.com/en/download/navicat-for-mysql](https://www.navicat.com/en/download/navicat-for-mysql)
 
-在上面的链接中，选择自己的系统版本，然后下载安装文件，进行安装，一直默认选下一步即可，最后安装成功。
+​	在上面的链接中，选择自己的系统版本，然后下载安装文件，进行安装，一直默认选下一步即可，最后安装成功。
 
-安装好了以后，在mysql数据库中创建一个新的数据库，比如名字为：**myblog**;创建完数据库以后，我们来看一看在beego项目中如何使用mysql数据库。
+​	安装好了以后，在mysql数据库中创建一个新的数据库，比如名字为：**myblog**;创建完数据库以后，我们来看一看在beego项目中如何使用mysql数据库。
 
 ### 2.4 数据库驱动
 
-我们之前给大家说过，数据库编程属于beego中的Models层，也称ORM模块。
+​	我们之前给大家说过，数据库编程属于beego中的Models层，也称ORM模块。
 
-在beego中，目前支持三种数据库驱动，分别是：
+​	在beego中，目前支持三种数据库驱动，分别是：
 
 * **MySQL：** [github.com/go-sql-driver/mysql](github.com/go-sql-driver/mysql)
 * **PostgreSQL：**[github.com/lib/pq](github.com/lib/pq)
 * **Sqlite3：**[github.com/mattn/go-sqlite3](github.com/mattn/go-sqlite3)
 
-beego中的ORM所具备的几个特性：
+​	beego中的ORM所具备的几个特性：
 
 * **支持Go语言的所有类型存储**
 
@@ -456,31 +472,27 @@ beego中的ORM所具备的几个特性：
 
 * **允许直接使用SQL查询**
 
-
 ### 2.5 beego项目中使用mysql
+
+​		首先要导入**数据库驱动**
 
 #### 2.5.1 导入对应的数据库驱动
 比如mysql：
-```
+```go
 import _ "github.com/go-sql-driver/mysql"
 ```
-![导入驱动](./img/driver_mysql.png)
+![Snipaste_2022-08-08_23-15-21](./images/Snipaste_2022-08-08_23-15-21.png)
 
 #### 2.5.2 注册驱动，连接数据库
 通过如下两句话注册数据库驱动，以及连接数据库的操作：
+```go
+orm.RegisterDriver("mysql",orm.DRMySQL) // 注册驱动
+orm.RegisterDataBase(aliasName,driverName,dbConn) // 连接
 ```
-orm.RegisterDriver("mysql",orm.DRMySQL)
-orm.RegisterDataBase(aliasName,driverName,dbConn)
-```
-详细代码如下：
-![注册驱动连接数据库](./img/conn_mysql.png)
-
 #### 2.5.3 创建数据库并执行程序
-![创建数据库](./img/WX20190515-150049@2x.png)
-
 连接数据库代码如下：
 
-```
+```go
 package models
     
 import (
@@ -493,32 +505,27 @@ import (
     
 func init() {
 	driverName := beego.AppConfig.String("driverName")
-    
 	//注册数据库驱动
 	orm.RegisterDriver(driverName, orm.DRMySQL)
-    
 	//数据库连接
 	user := beego.AppConfig.String("mysqluser")
 	pwd := beego.AppConfig.String("mysqlpwd")
 	host := beego.AppConfig.String("host")
 	port := beego.AppConfig.String("port")
 	dbname := beego.AppConfig.String("dbname")
-    
-	//dbConn := "root:yu271400@tcp(127.0.0.1:3306)/cmsproject?charset=utf8"
+
+	//dbConn := "root:123456@tcp(127.0.0.1:3306)/myblogweb?charset=utf8"
 	dbConn := user + ":" + pwd + "@tcp(" + host + ":" + port + ")/" + dbname + "?charset=utf8"
-    
+	// 连接数据库
 	err := orm.RegisterDataBase("default", driverName, dbConn)
 	if err != nil {
 		util.LogError("连接数据库出错")
 		return
 	}
-	util.LogInfo("连接数据库成功")  
+	util.LogInfo("连接数据库成功")
 }
 ```
 
 #### 2.5.4 程序执行结果
-![连接数据库测试结果](./img/WX20190515-152119@2x.png)
-    
 
-
-注：文章采用了部分外部网页链接，内容均来自公开内容。侵删除。
+![Snipaste_2022-08-08_23-51-25](./images/Snipaste_2022-08-08_23-51-25.png)

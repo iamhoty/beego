@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "BlogProject/MysqlDemo/routers"
+	_ "MysqlDemo/routers"
 	"github.com/astaxie/beego"
 	//测试数据库连接
-	_ "BlogProject/MysqlDemo/models"
+	_ "MysqlDemo/models"
 )
 
 func main() {

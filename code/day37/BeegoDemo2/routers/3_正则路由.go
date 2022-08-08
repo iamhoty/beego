@@ -29,6 +29,6 @@ func init() {
 	beego.Router("/getUserInfo/:id:int", &controllers.RegController{})
 
 	//string类型匹配
-	//beego.Router("/getUserInfo/:username:string", &controllers.RegController{})
+	beego.Router("/getUserInfo/:username:string", &controllers.RegController{})
 
 }

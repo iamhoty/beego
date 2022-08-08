@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"BlogProject/MysqlDemo/controllers"
+	"MysqlDemo/controllers"
 	"github.com/astaxie/beego"
 )
 
